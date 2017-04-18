@@ -52,8 +52,8 @@ Components:
 
 	Inventory Page
 		Search by Location/Bin, Generic Name, NDC, Expiration
-		Ensure CheckAll Box Works
-		Ensure that accepted drugs appear
+		Ensure CheckAll Box works  ✔
+		Ensure that accepted drugs appear  ✔
 		Filter drugs by each filter
 		Dispense drugs disappear (including refresh)
 		Dispensed drugs cannot be deleted from shipment page
