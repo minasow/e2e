@@ -32,7 +32,7 @@ Components:
 	
 	Drugs Page
 		Add a Drug  ✔
-		Ensure Drug Validation / Snackbar works
+		Ensure Drug Validation / Snackbar works   - BUGGY
 			Import/Export CSV (delay)
 		Search Drug by Name and NDC
 		Order Drug, Modify Order
@@ -51,14 +51,14 @@ Components:
 		Make sure snackbar messages are correct 
 
 	Inventory Page
-		Search by Location/Bin, Generic Name, NDC, Expiration
-		Ensure CheckAll Box works  ✔
+		Search by Location/Bin, Generic Name, NDC, Expiration ✔
+		Ensure CheckAll Box works  - BUGGY: The checkboxes don't fully load unless you refresh the page. Submitted issue.
 		Ensure that accepted drugs appear  ✔
-		Filter drugs by each filter
-		Dispense drugs disappear (including refresh)
-		Dispensed drugs cannot be deleted from shipment page
+		Filter drugs by each filter  ✔
+		Dispense drugs disappear (including refresh) ✔
+		Dispensed drugs cannot be deleted from shipment page 
 		Pend / Unpend drugs
 		Repack Drugs, original disappear, print label, new drugs appear with icon
 		Original repacked drugs cannot be deleted from shipment page
-		Eventually figure out what to do to test database “next” property set, records complete
-		Ensure you can delete inventory with 0 qty
+		       Eventually figure out what to do to test database “next” property set, records complete
+		Ensure you can delete inventory with 0 qty   - BUGGY
