@@ -51,14 +51,14 @@ Components:
 		Make sure snackbar messages are correct 
 
 	Inventory Page
-		Search by Location/Bin, Generic Name, NDC, Expiration
-		Ensure CheckAll Box Works
-		Ensure that accepted drugs appear
-		Filter drugs by each filter
-		Dispense drugs disappear (including refresh)
-		Dispensed drugs cannot be deleted from shipment page
+		Search by Location/Bin, Generic Name, NDC, Expiration ✔
+		Ensure CheckAll Box works  - BUGGY: The checkboxes don't fully load unless you refresh the page. Submitted issue.
+		Ensure that accepted drugs appear  ✔
+		Filter drugs by each filter  ✔
+		Dispense drugs disappear (including refresh) ✔
+		Dispensed drugs cannot be deleted from shipment page 
 		Pend / Unpend drugs
 		Repack Drugs, original disappear, print label, new drugs appear with icon
 		Original repacked drugs cannot be deleted from shipment page
-		Eventually figure out what to do to test database “next” property set, records complete
-		Ensure you can delete inventory with 0 qty
+		       Eventually figure out what to do to test database “next” property set, records complete
+		Ensure you can delete inventory with 0 qty   - BUGGY prints: "Verified At "2017-04-14T23:02:32.515Z" cannot be set unless qty.from or qty.to is set; Qty To null must be 1 or more"

@@ -12,7 +12,7 @@ var accounts = [["Sirum Georgia Pharmacy", "123-456-7899", "George","Wang"], ["G
 var drugs = [["4789-9455","Omar Test","Tablet"],["12345-6455","Adam Test","ER Capsule"],["4999-3355","Kiah Test","Injection"]]
 var shipments = [["TESTINGME1",0],["TESTINGME2",0],["TESTINGME3",1],["TESTINGME4",1]]
 var NUM_DRUGS_TO_ADD = 5
-
+var bins = ["A111","B455","Z903"]
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
@@ -128,13 +128,131 @@ var hitEnterOn = function(name){
 
 
 describe('SIRUM Website V2', function() {
-  
+  it("should let me search by various parameters", function(){
+    openPageFromScratch()
+    element(by.css('[href="#/inventory"]')).click()
+    browser.sleep(2000)
+    
+    //Search by generic
+    element(by.name("pro_searchbar")).click()
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(drugs[0][1])
+    browser.sleep(1000)
+    element(by.css('[name="pro_search_res"]:nth-child(1)')).click()
+    browser.sleep(4000)
+    
+    /*
+    //Search by expiration date
+    element(by.name("pro_searchbar")).click()
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).clear()
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys("2017-09")
+    //browser.sleep(1000)
+    //element(by.css('[name="pro_search_res"]:nth-child(1)')).click()
+    browser.sleep(4000)
+    //Search by  NDC
+    element(by.name("pro_searchbar")).click()
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).clear()
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(drugs[0][0])
+    browser.sleep(1000)
+    element(by.css('[name="pro_search_res"]:nth-child(1)')).click()
+    browser.sleep(4000)
+    */
+
+    //Search by bin
+    //element(by.name("pro_searchbar")).click()
+    //element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(bins[0])
+    //browser.sleep(1000)
+    //element(by.css('[name="pro_search_res"]:nth-child(1)')).click()
+    //browser.sleep(4000)
+
+    //browser.refresh()
+    //browser.sleep(5000)
+    /*element(by.name("pro_checkall")).click()
+    browser.sleep(1000)
+    var resToExpect = 10
+    //Make sure all boxes are not checked, then check them all
+    for(var i = 1; i <= resToExpect; i++){
+      var drug_line_name = '[name="pro_transaction"]:nth-child('
+      var full = drug_line_name.concat(i.toString()).concat(')')
+      //expect(element(by.css(full)).$$('td').get(1).getText()).toBe(accounts[accounts.length-i][0]); //check that all the facilities are there
+      expect(element(by.css(full)).element(by.name("pro_transaction_checkbox")).getAttribute('checked')).toBe("true")
+      //while verifying, go ahead and check all their boxes
+      element(by.css(full)).element(by.name('pro_transaction_checkbox')).click() //should unauthorize all accounts
+      browser.sleep(1000)
+    }
+
+    for(var i = 1; i <= resToExpect; i++){
+      var drug_line_name = '[name="pro_transaction"]:nth-child('
+      var full = drug_line_name.concat(i.toString()).concat(')')
+      //expect(element(by.css(full)).$$('td').get(1).getText()).toBe(accounts[accounts.length-i][0]); //check that all the facilities are there
+      expect(element(by.css(full)).element(by.name("pro_transaction_checkbox")).getAttribute('checked')).toBe(null)
+      //while verifying, go ahead and check all their boxes
+      //element(by.css(full)).element(by.name('pro_transaction_checkbox')).click() //should unauthorize all accounts
+      browser.sleep(1000)
+    }*/
+
+    /*
+    //Check that all the filters work
+    //TODO: Figure out way make this all encapsulated
+    var transactions = element.all(by.name("pro_transaction"))
+    expect(transactions.count()).toEqual(10)
+
+    element(by.name("pro_ndc_filter")).element(by.name('pro_checkbox')).click()
+    browser.sleep(2000)
+    transactions = element.all(by.name("pro_transaction"))
+    expect(transactions.count()).toEqual(0)
+    element(by.name("pro_ndc_filter")).element(by.name('pro_checkbox')).click()
+
+    element(by.name("pro_exp_filter")).element(by.name("pro_checkbox")).click()
+    browser.sleep(2000)
+    transactions = element.all(by.name("pro_transaction"))
+    expect(transactions.count()).toEqual(8)
+    element(by.name("pro_exp_filter")).element(by.name("pro_checkbox")).click()
+
+    element(by.name("pro_repack_filter")).element(by.name("pro_checkbox")).click()
+    browser.sleep(2000)
+    transactions = element.all(by.name("pro_transaction"))
+    expect(transactions.count()).toEqual(0)
+    element(by.name("pro_repack_filter")).element(by.name("pro_checkbox")).click()
+
+    element(by.name("pro_form_filter")).element(by.name("pro_checkbox")).click()
+    browser.sleep(2000)
+    transactions = element.all(by.name("pro_transaction"))
+    expect(transactions.count()).toEqual(0)
+    element(by.name("pro_form_filter")).element(by.name("pro_checkbox")).click()
+  */
+
+    //Test if dispensing works
+    element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
+    browser.sleep(1000)
+    element(by.name("pro_menu")).click()
+    browser.sleep(2000)
+    element(by.name("pro_dispense")).click()
+    browser.sleep(2000)
+    transactions = element.all(by.name("pro_transaction"))
+    expect(transactions.count()).toEqual(9)
+
+    browser.refresh()
+    browser.sleep(4000)
+    transactions = element.all(by.name("pro_transaction"))
+    expect(transactions.count()).toEqual(9)
+    browser.sleep(2000)
+
+     //Check the drug, click on "pend", then it should incremenet the amount of options
+     //int he drawer, click on the first one
+     //you should find the drug there
+     //Test if pending works
+
+
+  })
+
+
+
   /* Shipments Page Testing
    * Running this block on it's own should completely test the functionality
    * of the shipments page.
    */
    //--------------------------------------------------------------------------------------------
-  
+  /*
   //START PAGE: LOGIN
   //END PAGE: NEW SHIPMENT  
   it("should let me create new shipments",function(){
@@ -285,7 +403,7 @@ describe('SIRUM Website V2', function() {
 
 
   })
-
+  */
 
 
   
