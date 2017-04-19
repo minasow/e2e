@@ -4,13 +4,18 @@ To run, from within the directory, run the following commands
 
 npm install protractor
 npm install selenium
-npm install aurelia/protractor-plugin   //this repo sometimes changes location, and can be edited in conf.js so you access index.js, or whichever file has all the helpers, likeloadAndWaitForAureliaPage
+npm install aurelia/protractor-plugin   //this repo sometimes changes location, and can be edited in 											conf.js so you access index.js, or whichever file has all 											the helpers, likeloadAndWaitForAureliaPage
 npm install protractor-hotkeys
 npm install protractor-numerator
 
-To run the testing issue the following command
+To run the testing, issue the following command
 
 protractor conf.js
+
+
+
+
+
 
 Components:
 	Join Page
@@ -52,13 +57,13 @@ Components:
 
 	Inventory Page
 		Search by Location/Bin, Generic Name, NDC, Expiration ✔
-		Ensure CheckAll Box works  - BUGGY: The checkboxes don't fully load unless you refresh the page. Submitted issue.
+		Ensure CheckAll Box works   ✔
 		Ensure that accepted drugs appear  ✔
 		Filter drugs by each filter  ✔
 		Dispense drugs disappear (including refresh) ✔
 		Dispensed drugs cannot be deleted from shipment page 
-		Pend / Unpend drugs
+		Pend / Unpend drugs   ✔
 		Repack Drugs, original disappear, print label, new drugs appear with icon
 		Original repacked drugs cannot be deleted from shipment page
 		       Eventually figure out what to do to test database “next” property set, records complete
-		Ensure you can delete inventory with 0 qty   - BUGGY prints: "Verified At "2017-04-14T23:02:32.515Z" cannot be set unless qty.from or qty.to is set; Qty To null must be 1 or more"
+		Ensure you can delete inventory with 0 qty   - BUGGY prints: "Verified At "2017-														04-14T23:02:32.515Z" cannot be set unless qty.												from or qty.to is set; Qty To null must be 1 or 											more"

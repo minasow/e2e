@@ -166,15 +166,16 @@ describe('SIRUM Website V2', function() {
 
     //browser.refresh()
     //browser.sleep(5000)
-    /*element(by.name("pro_checkall")).click()
+    //Verify that checkAll works
+    element(by.name("pro_checkall")).click()
     browser.sleep(1000)
-    var resToExpect = 10
+    var resToExpect = 9
     //Make sure all boxes are not checked, then check them all
     for(var i = 1; i <= resToExpect; i++){
       var drug_line_name = '[name="pro_transaction"]:nth-child('
       var full = drug_line_name.concat(i.toString()).concat(')')
       //expect(element(by.css(full)).$$('td').get(1).getText()).toBe(accounts[accounts.length-i][0]); //check that all the facilities are there
-      expect(element(by.css(full)).element(by.name("pro_transaction_checkbox")).getAttribute('checked')).toBe("true")
+      expect(element(by.css(full)).element(by.name("pro_transaction_checkbox")).element(by.name("pro_input")).getAttribute('checked')).toBe("true")
       //while verifying, go ahead and check all their boxes
       element(by.css(full)).element(by.name('pro_transaction_checkbox')).click() //should unauthorize all accounts
       browser.sleep(1000)
@@ -184,11 +185,11 @@ describe('SIRUM Website V2', function() {
       var drug_line_name = '[name="pro_transaction"]:nth-child('
       var full = drug_line_name.concat(i.toString()).concat(')')
       //expect(element(by.css(full)).$$('td').get(1).getText()).toBe(accounts[accounts.length-i][0]); //check that all the facilities are there
-      expect(element(by.css(full)).element(by.name("pro_transaction_checkbox")).getAttribute('checked')).toBe(null)
+      expect(element(by.css(full)).element(by.name("pro_transaction_checkbox")).element(by.name("pro_input")).getAttribute('checked')).toBe(null)
       //while verifying, go ahead and check all their boxes
       //element(by.css(full)).element(by.name('pro_transaction_checkbox')).click() //should unauthorize all accounts
       browser.sleep(1000)
-    }*/
+    }
 
     /*
     //Check that all the filters work
@@ -220,7 +221,7 @@ describe('SIRUM Website V2', function() {
     expect(transactions.count()).toEqual(0)
     element(by.name("pro_form_filter")).element(by.name("pro_checkbox")).click()
   */
-
+    /*
     //Test if dispensing works
     element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     browser.sleep(1000)
@@ -236,12 +237,35 @@ describe('SIRUM Website V2', function() {
     transactions = element.all(by.name("pro_transaction"))
     expect(transactions.count()).toEqual(9)
     browser.sleep(2000)
-
+    *//*
      //Check the drug, click on "pend", then it should incremenet the amount of options
      //int he drawer, click on the first one
      //you should find the drug there
      //Test if pending works
-
+    element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
+    element(by.css('[name="pro_transaction"]:nth-child(2)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
+    browser.sleep(1000)
+    element(by.name("pro_menu")).click()
+    browser.sleep(2000)
+    element(by.name("pro_pend")).click()
+    browser.sleep(2000)
+    var transactions = element.all(by.name("pro_transaction"))
+    expect(transactions.count()).toEqual(7)
+    clickDrawer()
+    browser.sleep(1000)
+ 
+    var pendeditems = element.all(protractor.by.css('[name="pro_pended_items"]')) //
+    expect(pendeditems.count()).toEqual(1)  //
+    browser.sleep(2000)
+    element(by.css('[name="pro_pended_items"]:nth-of-type(1)')).click()
+    browser.sleep(1000)
+    var transactions = element.all(by.name("pro_transaction"))
+    expect(transactions.count()).toEqual(2)
+    element(by.name("pro_menu")).click()
+    browser.sleep(2000)
+    element(by.name("pro_pend")).click()
+    browser.sleep(2000)
+    */
 
   })
 
