@@ -4,16 +4,38 @@
 //And allow for easy testing and improvements
 //TODO: Incorporate into the client repo
 //TODO: find a way to run parts of it, or do it in sequence
-//Current goal is to run the entire thing from scratch
-//-----------------Pre-Reqs------------------------------------------
+//Current goal is to run the entire thing from scratch and pass all the tests
+
+
+
+
+
+
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------
+//-----------------------------PRE-REQS---------------------------------------------
+
+
 var hotkeys = require("protractor-hotkeys");
 var robot = require("robot-js")
 var keyboard = robot.Keyboard()
 var mouse = robot.Mouse();
+
+
+
+
+
+
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------
+//------------------------------DATA TO USE-------------------------------------------------
+
+
+
+
+
 
 
 var accounts = [["Sirum Georgia Pharmacy", "123-456-7899", "George","Wang"], ["GoodPill","673-487-9111","Amy","Chen"], ["Pilly","398-222-4311","Adam","Kircher"]]
@@ -21,10 +43,21 @@ var drugs = [["4789-9455","Omar Test","Tablet"],["12345-6455","Adam Test","ER Ca
 var shipments = [["TESTINGME1",0],["TESTINGME2",0],["TESTINGME3",1],["TESTINGME4",1]]
 var NUM_DRUGS_TO_ADD = 5
 var bins = ["A111","B455","Z903"]
+
+
+
+
+
+
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
-//---------------------------------------------------------------------------------------
+//--------------------------------HELPER FUNCTION-------------------------------------------
+
+
+
+
+
 
 
 var login = function(phone, password){
@@ -83,6 +116,7 @@ var join = function(arr){
     element(by.name("pro_password")).element(by.name("input")).sendKeys("password")
 }
 
+
 var addDrug = function(arr){
   element(by.name("pro_ndc_field")).element(by.name("input")).sendKeys(arr[0])
   element(by.name("pro_gen_field")).element(by.name("input")).clear()
@@ -93,6 +127,7 @@ var addDrug = function(arr){
   element(by.name("pro_drug_button")).click()
   browser.sleep(2000)
 }
+
 
 var openPageFromScratch = function(){
     browser.loadAndWaitForAureliaPage('http://localhost:9000');
@@ -150,35 +185,79 @@ var repack = function(qty,vials,exp,bin){
 }   
 
 
+
+
+
+
+
+
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------
+
+
+
+
+
+
 
 
 
 
 describe('SIRUM Website V2', function() {
-  it("should let me search by various parameters", function(){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //------------------------------------INVENTORY-------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+//START PAGE: scratch
+//END PAGE: INVENTORY
+
+  it("should let me search by various different kinds of format", function(){
     openPageFromScratch()
     element(by.css('[href="#/inventory"]')).click()
     browser.sleep(2000)
     
     //Search by generic
-   /* element(by.name("pro_searchbar")).click()
+    element(by.name("pro_searchbar")).click()
     element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(drugs[0][1])
     browser.sleep(1000)
     element(by.css('[name="pro_search_res"]:nth-child(1)')).click()
     browser.sleep(4000)
-    
-    
+     
     //Search by expiration date
     element(by.name("pro_searchbar")).click()
     element(by.name("pro_searchbar")).element(by.name("pro_input_field")).clear()
     element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys("2017-09")
-    //browser.sleep(1000)
-    //element(by.css('[name="pro_search_res"]:nth-child(1)')).click()
     browser.sleep(4000)
+
     //Search by  NDC
     element(by.name("pro_searchbar")).click()
     element(by.name("pro_searchbar")).element(by.name("pro_input_field")).clear()
@@ -186,14 +265,16 @@ describe('SIRUM Website V2', function() {
     browser.sleep(1000)
     element(by.css('[name="pro_search_res"]:nth-child(1)')).click()
     browser.sleep(4000)
-    */
+  })
 
 
-    //Test, for a set of drugs, repack them all into one, then check that the shipment with 
-    //them is no longer editable
 
+
+//START PAGE: INVENTORY
+//END PAGE: SHIPMENTS
+  it("should let me repack drugs and have them be disabled in their shipment", function(){
     element(by.name("pro_searchbar")).click()
-    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys("A001")
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys("A001") //currently not in the system
     browser.sleep(1000)
     var transactions = element.all(by.name("pro_transaction"))
     expect(transactions.count()).toEqual(3)
@@ -213,14 +294,16 @@ describe('SIRUM Website V2', function() {
       expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('disabled')).toBe("true") //how to expect an unchecked box
     }
     browser.sleep(1000)
+  })
 
 
-    //ISSUE:dealing with the printing part
 
-    //browser.sleep(10000)
-    //element(by.css('[class="cancel"]')).click()
-    //browser.sleep(1000)
-    /*
+
+//START PAGE: INVENTORY
+//END PAGE: INVENTORY
+  it("should be able to repack drugs", function(){
+
+    element(by.css('[href="#/inventory"]')).click()
     element(by.name("pro_searchbar")).click()
     element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys("A000")
     browser.sleep(1000)
@@ -233,32 +316,9 @@ describe('SIRUM Website V2', function() {
     element(by.css('[name="pro_transaction"]:nth-child(3)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     repack(30,1,"12/23","T01")
 
+  
 
 
-    browser.sleep(1000)
-    element(by.name("pro_menu")).click()
-    browser.sleep(1000)
-    element(by.name("pro_repack_qty")).element(by.name("input")).clear()
-    element(by.name("pro_repack_qty")).element(by.name("input")).sendKeys("30")
-    element(by.name("pro_repack_vials")).element(by.name("input")).clear()
-    element(by.name("pro_repack_vials")).element(by.name("input")).sendKeys("1")
-    element(by.name("pro_repack_bin")).element(by.name("input")).clear()    
-    element(by.name("pro_repack_bin")).element(by.name("input")).sendKeys("T01")
-    element(by.name("pro_repack_selected")).click()*/
- 
-    //This the only way I see to close the window right now. You can't have this test
-    //Running in the background then, because this will require clicking on the page and
-    //it'll need the mouse to be in the window.
-    //TODO: find a programmatic way to get around this
-    /*browser.sleep(6000).then(_=>{
-      var pos = robot.Mouse.getPos();
-      robot.Mouse.setPos (pos.sub (50));
-      mouse.click (robot.BUTTON_LEFT)
-      var bool = keyboard.click("{ESCAPE}")
-      console.log(bool)
-    })
-    browser.sleep(10000)
-    
     transactions = element.all(by.name("pro_transaction"))
     expect(transactions.count()).toEqual(13)
 
@@ -266,26 +326,15 @@ describe('SIRUM Website V2', function() {
     expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name("pro_transaction_exp")).element(by.name("input")).getAttribute("value")).toBe("12/23")
     expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name("pro_transaction_qty")).element(by.name("input")).getAttribute("value")).toBe("30")
     expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name("pro_transaction_bin")).element(by.name("input")).getAttribute("value")).toBe("T01")
-    browser.sleep(5000)*/
+    browser.sleep(5000)
+  
+  }) 
     
-    //browser.sleep(1000)
-    //element(by.css('[name="pro_search_res"]:nth-child(1)')).click()
-    //browser.sleep(4000)
 
 
-    //Test the repacking
-     //         pro_repack_selected
-     //         name = "pro_repack_qty"
-      //        name = "pro_repack_vials"
-      //        name = "pro_repack_exp"
-
-    //expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name("pro_repack_icon")).element(by.name("pro_icon")).isDisplayed()).toBe(true)  //how to test for the icon being displayed
-    //expect(element(by.css('[name="pro_transaction"]:nth-child(5)')).element(by.name("pro_repack_icon")).element(by.name("pro_icon")).isDisplayed()).toBe(false)  
-      
-
-    //browser.refresh()
-    //browser.sleep(5000)
-    /*
+//START PAGE: INVENTORY
+//END PAGE: INVENTORY
+  it("should be able to use the checkAll feature", function(){
     //Verify that checkAll works
     element(by.name("pro_checkall")).click()
     browser.sleep(1000)
@@ -309,9 +358,14 @@ describe('SIRUM Website V2', function() {
       //while verifying, go ahead and check all their boxes
       //element(by.css(full)).element(by.name('pro_transaction_checkbox')).click() //should unauthorize all accounts
       browser.sleep(1000)
-    }*/
+    }
+  })
 
-    /*
+
+
+//START PAGE: INVENTORY
+//END PAGE: INVENTORY
+  it("should be able to filter by all formats", function(){ 
     //Check that all the filters work
     //TODO: Figure out way make this all encapsulated
     var transactions = element.all(by.name("pro_transaction"))
@@ -340,8 +394,15 @@ describe('SIRUM Website V2', function() {
     transactions = element.all(by.name("pro_transaction"))
     expect(transactions.count()).toEqual(0)
     element(by.name("pro_form_filter")).element(by.name("pro_checkbox")).click()
-  */
-    /*
+  
+  })
+  
+
+
+
+//START PAGE: INVENTORY
+//END PAGE: INVENTORY
+  it("should dispense drugs", function(){
     //Test if dispensing works
     element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     browser.sleep(1000)
@@ -357,11 +418,14 @@ describe('SIRUM Website V2', function() {
     transactions = element.all(by.name("pro_transaction"))
     expect(transactions.count()).toEqual(9)
     browser.sleep(2000)
-    *//*
-     //Check the drug, click on "pend", then it should incremenet the amount of options
-     //int he drawer, click on the first one
-     //you should find the drug there
-     //Test if pending works
+  })
+  
+
+
+
+//START PAGE: INVENTORY
+//END PAGE: INVENTORY
+  it("should let me pend items", function(){
     element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     element(by.css('[name="pro_transaction"]:nth-child(2)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     browser.sleep(1000)
@@ -385,21 +449,51 @@ describe('SIRUM Website V2', function() {
     browser.sleep(2000)
     element(by.name("pro_pend")).click()
     browser.sleep(2000)
-    */
-
+    
   })
 
 
 
-  /* Shipments Page Testing
-   * Running this block on it's own should completely test the functionality
-   * of the shipments page.
-   */
-   //--------------------------------------------------------------------------------------------
-  /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //----------------------------------SHIPMNENTS---------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   //START PAGE: LOGIN
   //END PAGE: NEW SHIPMENT  
-  it("should let me create new shipments",function(){
+  /*it("should let me create new shipments",function(){
     openPageFromScratch()
 
     for(var i = 0; i < shipments.length; i++){
@@ -551,7 +645,37 @@ describe('SIRUM Website V2', function() {
 
 
   
+
+
+
+
+
+
+
+
+
+
+
   //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //-----------------------------------DRUG PAGE-------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   /*it("should let me add a drug",function(){
@@ -573,6 +697,43 @@ describe('SIRUM Website V2', function() {
     }
 
   })*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //---------------------------------------LOGIN/JOIN--------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   //START PAGE: LOGIN
@@ -739,7 +900,51 @@ describe('SIRUM Website V2', function() {
 
 
 
-  /* The testing for the accounts page should allow me to properly add a user
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //----------------------------------------ACCOUNTS-----------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /* ACCOUNTS
+   * The testing for the accounts page should allow me to properly add a user
    * and then switch to them by logging out logging back in with them. It should
    * allow me to delete the user and then I can't log back in with them.
    * It should not let me create a new user without properfieldsfor everything.
