@@ -7,6 +7,9 @@ npm install selenium
 npm install aurelia/protractor-plugin   //this repo sometimes changes location, and can be edited in 											conf.js so you access index.js, or whichever file has all 											the helpers, likeloadAndWaitForAureliaPage
 npm install protractor-hotkeys
 npm install protractor-numerator
+npm install robot-js
+
+
 
 To run the testing, issue the following command
 
@@ -63,7 +66,11 @@ Components:
 		Dispense drugs disappear (including refresh) ✔
 		Dispensed drugs cannot be deleted from shipment page 
 		Pend / Unpend drugs   ✔
-		Repack Drugs, original disappear, print label, new drugs appear with icon
-		Original repacked drugs cannot be deleted from shipment page
+		Repack Drugs:       - Added validation to prevent you from repacking more than the quantity 						of transactions you've selected, and from repacking zero vials
+		Original disappear ✔
+		     print label   ✔ - Has a solution, but requires that you be in the window for it to 						properly execute
+		Doesn't allow you to repack more qty than the transactions you've selected
+		new drugs appear with icon ✔
+		Original repacked drugs cannot be deleted from shipment page ✔
 		       Eventually figure out what to do to test database “next” property set, records complete
 		Ensure you can delete inventory with 0 qty   - BUGGY prints: "Verified At "2017-														04-14T23:02:32.515Z" cannot be set unless qty.												from or qty.to is set; Qty To null must be 1 or 											more"
