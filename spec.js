@@ -344,7 +344,7 @@ describe('SIRUM Website V2', function() {
   //END PAGE: A SHIPMENT
   it("should let me add items to a donation that will all be repacked", function(){
     browser.refresh()
-    browser.sleep(5000)
+    browser.sleep(7000)
     //This could be a point to search for a particular shipment and then add stuff to that shipment
     element(by.css('[name="pro_shipments"]:nth-of-type(3)')).click() //this is 1-indexed. use nth-of-type instead of nth-child here to access
     browser.sleep(4000)
@@ -384,9 +384,10 @@ describe('SIRUM Website V2', function() {
   //END PAGE: SAME SHIPMENT
   it("should let me check/uncheck boxes and save this", function(){
     browser.refresh()
-    browser.sleep(3000)
-    browser.actions().mouseMove(element(by.name('new_shipment')),{x:500,y:200}).click().perform()
-    
+    browser.sleep(5000)
+    element(by.css('[name="pro_shipments"]:nth-of-type(2)')).click() //this is 1-indexed. use nth-of-type instead of nth-child here to access
+    browser.sleep(4000)
+
     for(var i = 1; i <= NUM_DRUGS_TO_ADD; i++){
       var name = '[name="pro_transaction"]:nth-of-type('
       var full = name.concat(i.toString()).concat(')')
@@ -510,16 +511,16 @@ describe('SIRUM Website V2', function() {
     element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(bins[1]) //currently not in the system
     browser.sleep(1000)
     var transactions = element.all(by.name("pro_transaction"))
-    expect(transactions.count()).toEqual(3)
+    expect(transactions.count()).toEqual(NUM_DRUGS_TO_ADD)
     element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     element(by.css('[name="pro_transaction"]:nth-child(2)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     element(by.css('[name="pro_transaction"]:nth-child(3)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     repack(30,1,"12/23","T01")
     transactions = element.all(by.name("pro_transaction"))
-    expect(transactions.count()).toEqual(1)
+    expect(transactions.count()).toEqual(NUM_DRUGS_TO_ADD - 2)
     element(by.css('[href="#/shipments"]')).click()
     browser.sleep(2000)
-    element(by.css('[name="pro_shipments"]:nth-of-type(2)')).click()
+    element(by.css('[name="pro_shipments"]:nth-of-type(3)')).click()
     browser.sleep(1000)
     for(var i = 1; i <= 3; i++){
       var name = '[name="pro_transaction"]:nth-of-type('
@@ -539,7 +540,9 @@ describe('SIRUM Website V2', function() {
     element(by.css('[href="#/inventory"]')).click()
     element(by.name("pro_searchbar")).click()
     element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(drugs[0][1])
-    browser.sleep(1000)
+    browser.sleep(3000)
+    element(by.css('[name="pro_search_res"]:nth-child(1)')).click()
+    browser.sleep(2000)
     //at this point all have quantity 55
 
     var transactions = element.all(by.name("pro_transaction"))
