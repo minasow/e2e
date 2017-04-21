@@ -41,9 +41,10 @@ var mouse = robot.Mouse();
 var accounts = [["Sirum Georgia Pharmacy", "123-456-7899", "George","Wang"], ["GoodPill","673-487-9111","Amy","Chen"], ["Pilly","398-222-4311","Adam","Kircher"]]
 var drugs = [["4789-9455","Omar Test","Tablet"],["12345-6455","Adam Test","ER Capsule"],["4999-3355","Kiah Test","Injection"]]
 var shipments = [["TESTINGME1",0],["TESTINGME2",0],["TESTINGME3",1],["TESTINGME4",1]]
-var NUM_DRUGS_TO_ADD = 5
+var NUM_DRUGS_TO_ADD = 10
 var bins = ["A111","B455","Z903"]
-
+var exps = ["9/17","12/23","6/17"]
+var invexps = ["2017-09","2023-12","2017-06"]
 
 
 
@@ -222,6 +223,238 @@ describe('SIRUM Website V2', function() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------
+  //----------------------------------SHIPMNENTS---------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //START PAGE: LOGIN
+  //END PAGE: NEW SHIPMENT  
+  it("should let me create new shipments",function(){
+    openPageFromScratch()
+
+    for(var i = 0; i < shipments.length; i++){
+      type("pro_tracking_input",shipments[i][0],-1)
+      selectDropdownbyNum(element(by.name("pro_from_option")),shipments[i][1]+1)
+      browser.sleep(1000)
+      element(by.name('pro_create_button')).click()
+      browser.sleep(2000)
+      clickDrawer()
+      browser.sleep(1000)
+      element(by.name('new_shipment')).click()
+      browser.sleep(1000)
+    }
+  })
+
+
+
+  //START PAGE: NEW SHIPMENT
+  //END PAGE: SHIPMENTS (with drawer open and filtered)
+  it("should let me check on the existing shipments", function(){
+    clickDrawer()
+    browser.sleep(2000)
+    type("pro_filter_input",shipments[3][0],-1) //searching for one tracking number returns one output
+    var aftersearchshipmentsindrawer = element.all(protractor.by.css('[name="pro_shipments"]')) //gets all the shipments
+    expect(aftersearchshipmentsindrawer.count()).toEqual(1)
+    browser.sleep(1000)
+
+    type("pro_filter_input",accounts[2][0],-1)  //searching by account -- in this case unused account will return nothing
+    browser.sleep(2000)
+    expect(element.all(protractor.by.css('[name="pro_shipments"]')).count()).toEqual(0)
+    browser.sleep(1000)
+  })
+
+
+  //START PAGE: SHIPMENTS
+  //END PAGE: A SHIPMENT
+  it("should let me add items to a donation", function(){
+    browser.refresh()
+    browser.sleep(5000)
+    //This could be a point to search for a particular shipment and then add stuff to that shipment
+    element(by.css('[name="pro_shipments"]:nth-of-type(2)')).click() //this is 1-indexed. use nth-of-type instead of nth-child here to access
+    browser.sleep(4000)
+
+    for(var i = 0; i < NUM_DRUGS_TO_ADD; i++){
+      drug = drugs[i%3][i%2] //alternates between all the drugs, and switches between using NDC and generic
+      element(by.name("pro_searchbar")).click()
+      element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(drug)
+      browser.sleep(2000)
+      element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(protractor.Key.ENTER)
+      browser.sleep(2000)
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).clear()
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys(exps[i%3])
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys(protractor.Key.ENTER)
+
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys("55")
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys(protractor.Key.ENTER)
+    
+      browser.sleep(2000)
+      //Then ensure that it autochecks on an ordered drug that meets criteria
+      if((drug == "Omar Test") || (drug == "4789-9455")){    
+        expect(element(by.css('[ref="snackbar"]')).element(by.name('pro_text')).getText()).toBe('Drug is ordered')
+        expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe("true") //how to expect an unchecked box
+        element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_bin')).element(by.name("input")).clear()
+        element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_bin')).element(by.name("input")).sendKeys(bins[0])
+      } else {
+        expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect an unchecked box
+      }
+     // element(by.css('[name="pro_account"]:nth-child(2)')).element(by.name('pro_checkbox')).click() //how to approve or not approve a donor
+     // browser.sleep(1000)
+      //expect(element(by.css('[name="pro_account"]:nth-child(2)')).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect a checked box
+    }
+
+    var drugsinShipment = element.all(by.name("pro_transaction"))
+    expect(drugsinShipment.count()).toEqual(NUM_DRUGS_TO_ADD)
+    browser.sleep(2000)
+
+  })
+  
+//START PAGE: SHIPMENTS
+  //END PAGE: A SHIPMENT
+  it("should let me add items to a donation that will all be repacked", function(){
+    browser.refresh()
+    browser.sleep(5000)
+    //This could be a point to search for a particular shipment and then add stuff to that shipment
+    element(by.css('[name="pro_shipments"]:nth-of-type(3)')).click() //this is 1-indexed. use nth-of-type instead of nth-child here to access
+    browser.sleep(4000)
+
+    for(var i = 0; i < NUM_DRUGS_TO_ADD; i++){
+      drug = drugs[0][1] 
+      element(by.name("pro_searchbar")).click()
+      element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(drug)
+      browser.sleep(2000)
+      element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(protractor.Key.ENTER)
+      browser.sleep(2000)
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).clear()
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys(exps[i%3])
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys(protractor.Key.ENTER)
+
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys("55")
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys(protractor.Key.ENTER)
+    
+      browser.sleep(2000)
+      //Then ensure that it autochecks on an ordered drug that meets criteria
+      expect(element(by.css('[ref="snackbar"]')).element(by.name('pro_text')).getText()).toBe('Drug is ordered')
+      expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe("true") //how to expect an unchecked box
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_bin')).element(by.name("input")).clear()
+      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_bin')).element(by.name("input")).sendKeys(bins[1])
+      
+    }
+
+    var drugsinShipment = element.all(by.name("pro_transaction"))
+    expect(drugsinShipment.count()).toEqual(NUM_DRUGS_TO_ADD)
+    browser.sleep(2000)
+
+  })
+
+
+
+  //START PAGE: A SHIPMENT
+  //END PAGE: SAME SHIPMENT
+  it("should let me check/uncheck boxes and save this", function(){
+    browser.refresh()
+    browser.sleep(3000)
+    browser.actions().mouseMove(element(by.name('new_shipment')),{x:500,y:200}).click().perform()
+    
+    for(var i = 1; i <= NUM_DRUGS_TO_ADD; i++){
+      var name = '[name="pro_transaction"]:nth-of-type('
+      var full = name.concat(i.toString()).concat(')')
+      
+      if((i == 2) || (i == 5)){
+        expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe("true") //how to expect an unchecked box
+      } else {
+        expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect an unchecked boxclick
+      }
+      element(by.css(full)).element(by.name("pro_checkbox")).click()
+    }
+
+    browser.sleep(1000)
+    browser.refresh()
+    browser.sleep(3000)
+    browser.actions().mouseMove(element(by.name('new_shipment')),{x:500,y:200}).click().perform()
+    
+    for(var i = 1; i <= NUM_DRUGS_TO_ADD; i++){
+
+      var name = '[name="pro_transaction"]:nth-of-type('
+      var full = name.concat(i.toString()).concat(')')
+      
+      if((i != 2) && (i != 5)){
+        expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe("true") //how to expect an unchecked box
+      } else {
+        expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect an unchecked boxclick
+      }
+      element(by.css(full)).element(by.name("pro_checkbox")).click()
+
+    }
+  })
+
+
+  //START PAGE: A SHIPMENT
+  //END PAGE: SAME SHIPMENT
+  it("should let me use keyboard shortcuts", function(){
+    var drugsinShipment = element.all(by.name("pro_transaction"))
+    expect(drugsinShipment.count()).toEqual(NUM_DRUGS_TO_ADD)
+    browser.sleep(2000)
+
+    element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_qty')).element(by.name("input")).clear()
+    element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys("0")
+
+    browser.sleep(2000)
+    var afterdrugsinShipment = element.all(by.name("pro_transaction"))
+    expect(afterdrugsinShipment.count()).toEqual(NUM_DRUGS_TO_ADD-1)
+    browser.sleep(2000)
+
+    expect(element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_exp')).element(by.name("input")).getAttribute('value')).toBe('08/17')
+    element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys("+")
+    expect(element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_exp')).element(by.name("input")).getAttribute('value')).toBe('09/17')
+
+
+  })
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------
@@ -241,7 +474,6 @@ describe('SIRUM Website V2', function() {
 //END PAGE: INVENTORY
 
   it("should let me search by various different kinds of format", function(){
-    openPageFromScratch()
     element(by.css('[href="#/inventory"]')).click()
     browser.sleep(2000)
     
@@ -255,7 +487,7 @@ describe('SIRUM Website V2', function() {
     //Search by expiration date
     element(by.name("pro_searchbar")).click()
     element(by.name("pro_searchbar")).element(by.name("pro_input_field")).clear()
-    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys("2017-09")
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(invexps[0])
     browser.sleep(4000)
 
     //Search by  NDC
@@ -274,7 +506,8 @@ describe('SIRUM Website V2', function() {
 //END PAGE: SHIPMENTS
   it("should let me repack drugs and have them be disabled in their shipment", function(){
     element(by.name("pro_searchbar")).click()
-    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys("A001") //currently not in the system
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).clear() //currently not in the system
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(bins[1]) //currently not in the system
     browser.sleep(1000)
     var transactions = element.all(by.name("pro_transaction"))
     expect(transactions.count()).toEqual(3)
@@ -305,22 +538,20 @@ describe('SIRUM Website V2', function() {
 
     element(by.css('[href="#/inventory"]')).click()
     element(by.name("pro_searchbar")).click()
-    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys("A000")
+    element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(drugs[0][1])
     browser.sleep(1000)
     //at this point all have quantity 55
 
     var transactions = element.all(by.name("pro_transaction"))
-    expect(transactions.count()).toEqual(14)
+    expect(transactions.count()).toEqual(NUM_DRUGS_TO_ADD/2)
     //Click the first two elements
     element(by.css('[name="pro_transaction"]:nth-child(2)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     element(by.css('[name="pro_transaction"]:nth-child(3)')).element(by.name('pro_transaction_checkbox')).click()  //will dispense this drug
     repack(30,1,"12/23","T01")
 
-  
-
 
     transactions = element.all(by.name("pro_transaction"))
-    expect(transactions.count()).toEqual(13)
+    expect(transactions.count()).toEqual(NUM_DRUGS_TO_ADD/2 - 1)
 
     expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name("pro_repack_icon")).element(by.name("pro_icon")).isDisplayed()).toBe(true)  //how to test for the icon being displayed
     expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name("pro_transaction_exp")).element(by.name("input")).getAttribute("value")).toBe("12/23")
@@ -338,7 +569,7 @@ describe('SIRUM Website V2', function() {
     //Verify that checkAll works
     element(by.name("pro_checkall")).click()
     browser.sleep(1000)
-    var resToExpect = 9
+    var resToExpect = NUM_DRUGS_TO_ADD-1
     //Make sure all boxes are not checked, then check them all
     for(var i = 1; i <= resToExpect; i++){
       var drug_line_name = '[name="pro_transaction"]:nth-child('
@@ -369,7 +600,7 @@ describe('SIRUM Website V2', function() {
     //Check that all the filters work
     //TODO: Figure out way make this all encapsulated
     var transactions = element.all(by.name("pro_transaction"))
-    expect(transactions.count()).toEqual(10)
+    expect(transactions.count()).toEqual(NUM_DRUGS_TO_ADD/2 - 1)
 
     element(by.name("pro_ndc_filter")).element(by.name('pro_checkbox')).click()
     browser.sleep(2000)
@@ -452,199 +683,12 @@ describe('SIRUM Website V2', function() {
     
   })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //--------------------------------------------------------------------------------------------
-  //--------------------------------------------------------------------------------------------
-  //--------------------------------------------------------------------------------------------
-  //----------------------------------SHIPMNENTS---------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  //START PAGE: LOGIN
-  //END PAGE: NEW SHIPMENT  
-  /*it("should let me create new shipments",function(){
-    openPageFromScratch()
-
-    for(var i = 0; i < shipments.length; i++){
-      type("pro_tracking_input",shipments[i][0],-1)
-      selectDropdownbyNum(element(by.name("pro_from_option")),shipments[i][1]+1)
-      browser.sleep(1000)
-      element(by.name('pro_create_button')).click()
-      browser.sleep(2000)
-      clickDrawer()
-      browser.sleep(1000)
-      element(by.name('new_shipment')).click()
-      browser.sleep(1000)
-    }
-  })
-
-  //START PAGE: NEW SHIPMENT
-  //END PAGE: SHIPMENTS (with drawer open and filtered)
-  it("should let me check the existing shipments", function(){
-    //openPageFromScratch()
-    clickDrawer()
-    //element(by.css('[name="pro_shipments"]:nth-child(2)')).click()
-    browser.sleep(2000)
-    
-    //var shipmentsindrawer = element.all(protractor.by.css('[name="pro_shipments"]')) //gets all the shipments
-    //expect(shipmentsindrawer.count()).toEqual(shipments.length)  //this is how you get the count of number of shipments in the drawer
-    //browser.sleep(3000)
-
-    type("pro_filter_input",shipments[3][0],-1) //searching for one tracking number returns one output
-    var aftersearchshipmentsindrawer = element.all(protractor.by.css('[name="pro_shipments"]')) //gets all the shipments
-    expect(aftersearchshipmentsindrawer.count()).toEqual(1)
-    browser.sleep(1000)
-
-
-    type("pro_filter_input",accounts[2][0],-1)  //searching by account -- in this case unused account will return nothing
-    browser.sleep(2000)
-    expect(element.all(protractor.by.css('[name="pro_shipments"]')).count()).toEqual(0)
-    browser.sleep(1000)
-  })
-
-
-  //START PAGE: SHIPMENTS
-  //END PAGE: A SHIPMENT
-  it("should let me add items to a donation", function(){
-    //openPageFromScratch()
-    browser.refresh()
-    browser.sleep(5000)
-    //clickDrawer()
-    //browser.sleep(2000)
-    //This could be a point to search for a particular shipment and then add stuff to that shipment
-    element(by.css('[name="pro_shipments"]:nth-of-type(2)')).click() //this is 1-indexed. use nth-of-type instead of nth-child here to access
-    browser.sleep(4000)
-
-    for(var i = 0; i < NUM_DRUGS_TO_ADD; i++){
-      drug = drugs[i%3][i%2] //alternates between all the drugs, and switches between using NDC and generic
-      element(by.name("pro_searchbar")).click()
-      element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(drug)
-      browser.sleep(2000)
-      element(by.name("pro_searchbar")).element(by.name("pro_input_field")).sendKeys(protractor.Key.ENTER)
-      browser.sleep(2000)
-      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).clear()
-      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys("8/17")
-      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys(protractor.Key.ENTER)
-
-      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys("55")
-      element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys(protractor.Key.ENTER)
-    
-      browser.sleep(2000)
-      //Then ensure that it autochecks on an ordered drug that meets criteria
-      if((drug == "Omar Test") || (drug == "4789-9455")){    
-        expect(element(by.css('[ref="snackbar"]')).element(by.name('pro_text')).getText()).toBe('Drug is ordered')
-        expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe("true") //how to expect an unchecked box
-      } else {
-        expect(element(by.css('[name="pro_transaction"]:nth-child(1)')).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect an unchecked box
-      }
-     // element(by.css('[name="pro_account"]:nth-child(2)')).element(by.name('pro_checkbox')).click() //how to approve or not approve a donor
-     // browser.sleep(1000)
-      //expect(element(by.css('[name="pro_account"]:nth-child(2)')).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect a checked box
-    }
-
-    var drugsinShipment = element.all(by.name("pro_transaction"))
-    expect(drugsinShipment.count()).toEqual(NUM_DRUGS_TO_ADD)
-    browser.sleep(2000)
-
-  })
   
-  //START PAGE: A SHIPMENT
-  //END PAGE: SAME SHIPMENT
-  it("should let me check/uncheck boxes and save this", function(){
-    browser.refresh()
-    browser.sleep(3000)
-    browser.actions().mouseMove(element(by.name('new_shipment')),{x:500,y:200}).click().perform()
-    
-    for(var i = 1; i <= NUM_DRUGS_TO_ADD; i++){
-
-      var name = '[name="pro_transaction"]:nth-of-type('
-      var full = name.concat(i.toString()).concat(')')
-      
-      if((i == 2) || (i == 5)){
-        expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe("true") //how to expect an unchecked box
-      } else {
-        expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect an unchecked boxclick
-      }
-      element(by.css(full)).element(by.name("pro_checkbox")).click()
-    }
-
-    browser.sleep(1000)
-    browser.refresh()
-    browser.sleep(3000)
-    browser.actions().mouseMove(element(by.name('new_shipment')),{x:500,y:200}).click().perform()
-    
-    for(var i = 1; i <= NUM_DRUGS_TO_ADD; i++){
-
-      var name = '[name="pro_transaction"]:nth-of-type('
-      var full = name.concat(i.toString()).concat(')')
-      
-      if((i != 2) && (i != 5)){
-        expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe("true") //how to expect an unchecked box
-      } else {
-        expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect an unchecked boxclick
-      }
-      element(by.css(full)).element(by.name("pro_checkbox")).click()
-
-    }
-  })
 
 
-  //START PAGE: A SHIPMENT
-  //END PAGE: SAME SHIPMENT
-  it("should let me use keyboard shortcuts", function(){
-    var drugsinShipment = element.all(by.name("pro_transaction"))
-    expect(drugsinShipment.count()).toEqual(NUM_DRUGS_TO_ADD)
-    browser.sleep(2000)
-
-    element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_qty')).element(by.name("input")).clear()
-    element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys("0")
-
-    browser.sleep(2000)
-    var afterdrugsinShipment = element.all(by.name("pro_transaction"))
-    expect(afterdrugsinShipment.count()).toEqual(NUM_DRUGS_TO_ADD-1)
-    browser.sleep(2000)
-
-    expect(element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_exp')).element(by.name("input")).getAttribute('value')).toBe('08/17')
-    element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys("+")
-    expect(element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_exp')).element(by.name("input")).getAttribute('value')).toBe('09/17')
 
 
-  })
-  */
 
-
-  
 
 
 
