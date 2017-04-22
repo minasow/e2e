@@ -41,7 +41,7 @@ var mouse = robot.Mouse();
 var accounts = [["Sirum Georgia Pharmacy", "123-456-7899", "George","Wang"], ["GoodPill","673-487-9111","Amy","Chen"], ["Pilly","398-222-4311","Adam","Kircher"]]
 var drugs = [["4789-9455","Omar Test","Tablet"],["12345-6455","Adam Test","ER Capsule"],["4999-3355","Kiah Test","Injection"]]
 var shipments = [["TESTINGME1",0],["TESTINGME2",0],["TESTINGME3",1],["TESTINGME4",1]]
-var NUM_DRUGS_TO_ADD = 10
+var NUM_DRUGS_TO_ADD = 9
 var bins = ["A111","B455","Z903"]
 var exps = ["9/17","12/23","6/17"]
 var invexps = ["2017-09","2023-12","2017-06"]
@@ -263,7 +263,6 @@ describe('SIRUM Website V2', function() {
   //END PAGE: NEW SHIPMENT  
   it("should let me create new shipments",function(){
     openPageFromScratch()
-
     for(var i = 0; i < shipments.length; i++){
       type("pro_tracking_input",shipments[i][0],-1)
       selectDropdownbyNum(element(by.name("pro_from_option")),shipments[i][1]+1)
@@ -388,11 +387,13 @@ describe('SIRUM Website V2', function() {
     element(by.css('[name="pro_shipments"]:nth-of-type(2)')).click() //this is 1-indexed. use nth-of-type instead of nth-child here to access
     browser.sleep(4000)
 
+
+
     for(var i = 1; i <= NUM_DRUGS_TO_ADD; i++){
       var name = '[name="pro_transaction"]:nth-of-type('
       var full = name.concat(i.toString()).concat(')')
       
-      if((i == 2) || (i == 5)){
+      if(drugs[i%3][1] == "Omar Test"){
         expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe("true") //how to expect an unchecked box
       } else {
         expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect an unchecked boxclick
@@ -410,12 +411,17 @@ describe('SIRUM Website V2', function() {
       var name = '[name="pro_transaction"]:nth-of-type('
       var full = name.concat(i.toString()).concat(')')
       
-      if((i != 2) && (i != 5)){
+      if(drugs[i%3][1] != "Omar Test"){
         expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe("true") //how to expect an unchecked box
+        element(by.css(full)).element(by.name("pro_checkbox")).click()
+
       } else {
         expect(element(by.css(full)).element(by.name('pro_checkbox')).element(by.name("pro_input")).getAttribute('checked')).toBe(null) //how to expect an unchecked boxclick
+        element(by.css(full)).element(by.name("pro_checkbox")).click()
+        browser.sleep(1000)
+        element(by.css(full)).element(by.name('pro_bin')).element(by.name("input")).sendKeys(bins[1])
+
       }
-      element(by.css(full)).element(by.name("pro_checkbox")).click()
 
     }
   })
@@ -428,17 +434,17 @@ describe('SIRUM Website V2', function() {
     expect(drugsinShipment.count()).toEqual(NUM_DRUGS_TO_ADD)
     browser.sleep(2000)
 
-    element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_qty')).element(by.name("input")).clear()
-    element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys("0")
+    element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_qty')).element(by.name("input")).clear()
+    element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_qty')).element(by.name("input")).sendKeys("0")
 
     browser.sleep(2000)
     var afterdrugsinShipment = element.all(by.name("pro_transaction"))
     expect(afterdrugsinShipment.count()).toEqual(NUM_DRUGS_TO_ADD-1)
     browser.sleep(2000)
 
-    expect(element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_exp')).element(by.name("input")).getAttribute('value')).toBe('08/17')
-    element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys("+")
-    expect(element(by.css('[name="pro_transaction"]:nth-of-type(2)')).element(by.name('pro_exp')).element(by.name("input")).getAttribute('value')).toBe('09/17')
+    expect(element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).getAttribute('value')).toBe("12/23")
+    element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).sendKeys("+")
+    expect(element(by.css('[name="pro_transaction"]:nth-of-type(1)')).element(by.name('pro_exp')).element(by.name("input")).getAttribute('value')).toBe('01/24')
 
 
   })
