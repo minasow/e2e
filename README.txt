@@ -74,3 +74,9 @@ Components:
 		Original repacked drugs cannot be deleted from shipment page ✔
 		       Eventually figure out what to do to test database “next” property set, records complete
 		Ensure you can delete inventory with 0 qty   - BUGGY prints: "Verified At "2017-														04-14T23:02:32.515Z" cannot be set unless qty.												from or qty.to is set; Qty To null must be 1 or 											more"
+
+
+Current Situation:
+4/24/17
+Working on getting the code to run as one encapsulated chunk without me having to write anything in. Can basically do that with shipments and inventory right now. Will need expand this to include the users/accounts/drugs testing. Once it can run through like this and all the expectations are lined up and it doesn't fail on timing anywhere, then I want to expand robustness of certain transaction related tasks. Then can begin integrating into the development repo and considering chunking of any sort.
+
